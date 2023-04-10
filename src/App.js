@@ -9,6 +9,9 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState(null);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     const userLocalStorage = JSON.parse(
@@ -31,7 +34,7 @@ const App = () => {
           <input
             type="text"
             name="Username"
-            id="username"
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
@@ -40,7 +43,7 @@ const App = () => {
           <input
             type="password"
             name="Password"
-            id="password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
@@ -53,14 +56,75 @@ const App = () => {
   const showBlogs = () => (
     <div>
       <h2>blogs</h2>
+
       <p>
         {`${user.username} is logged in`}{" "}
         <button onClick={handleLogout}>logout</button>{" "}
       </p>
+      {createNewBlog()}
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
     </div>
+  );
+
+  const handleCreateBlog = async (e) => {
+    e.preventDefault();
+
+    const newBlog = {
+      title,
+      author,
+      url,
+      user: user.id,
+    };
+
+    await blogService.createNew(newBlog, token);
+    const returnedBlogs = await blogService.getAll(token);
+    setBlogs(returnedBlogs);
+
+    resetBlogFields();
+  };
+
+  const resetBlogFields = () => {
+    setTitle("");
+    setAuthor("");
+    setUrl("");
+  };
+
+  const createNewBlog = () => (
+    <>
+      <h3>Create new</h3>
+      <form onSubmit={handleCreateBlog}>
+        <div>
+          Title:
+          <input
+            type="text"
+            name="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div>
+          Author:
+          <input
+            type="text"
+            name="Author"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+        </div>
+        <div>
+          Url:
+          <input
+            type="text"
+            name="Url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </div>
+        <button>Create</button>
+      </form>
+    </>
   );
 
   const handleSubmit = async (e) => {
