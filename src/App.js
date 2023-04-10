@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
@@ -12,6 +13,7 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const userLocalStorage = JSON.parse(
@@ -28,6 +30,7 @@ const App = () => {
   const showLogin = () => (
     <>
       <h3>login to application</h3>
+      <Notification notification={notification} />
       <form onSubmit={handleSubmit}>
         <div>
           username
@@ -56,7 +59,7 @@ const App = () => {
   const showBlogs = () => (
     <div>
       <h2>blogs</h2>
-
+      <Notification notification={notification} />
       <p>
         {`${user.username} is logged in`}{" "}
         <button onClick={handleLogout}>logout</button>{" "}
@@ -77,11 +80,22 @@ const App = () => {
       url,
       user: user.id,
     };
-
-    await blogService.createNew(newBlog, token);
-    const returnedBlogs = await blogService.getAll(token);
-    setBlogs(returnedBlogs);
-
+    let message = "";
+    const response = await blogService.createNew(newBlog, token);
+    if (response === "Request failed with status code 400") {
+      message = {
+        content: `Fill out all the fields.`,
+        style: "error",
+      };
+    } else {
+      message = {
+        content: `a new blog ${newBlog.title}! by ${newBlog.author} added`,
+        style: "info",
+      };
+      const returnedBlogs = await blogService.getAll(token);
+      setBlogs(returnedBlogs);
+    }
+    showNotification(message);
     resetBlogFields();
   };
 
@@ -138,13 +152,27 @@ const App = () => {
       setBlogs(returnedBlogs);
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(loggedUser));
     } catch (error) {
-      console.log("wrong credentials");
+      const message = {
+        content: `Wrong Credentials.`,
+        style: "error",
+      };
+      showNotification(message);
     }
   };
 
   const handleLogout = () => {
     window.localStorage.clear();
     setUser(null);
+  };
+
+  const showNotification = (message) => {
+    setNotification({
+      notification: message.content,
+      notificationStyle: message.style,
+    });
+    setTimeout(() => {
+      setNotification(null);
+    }, 1000);
   };
 
   return <>{user ? showBlogs() : showLogin()}</>;

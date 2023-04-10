@@ -20,9 +20,9 @@ const createNew = async (blog, token) => {
   };
 
   try {
-    await axios.post(baseUrl, blog, config);
+    return await axios.post(baseUrl, blog, config);
   } catch (error) {
-    console.log("error", error.message);
+    return error.message;
   }
 };
 
