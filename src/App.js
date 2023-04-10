@@ -11,8 +11,14 @@ const App = () => {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
-    if (loginService.token) {
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+    const userLocalStorage = JSON.parse(
+      window.localStorage.getItem("loggedBlogUser")
+    );
+    if (userLocalStorage) {
+      setUser(userLocalStorage);
+      const returnedToken = loginService.setToken(userLocalStorage.token);
+      setToken(returnedToken);
+      blogService.getAll(returnedToken).then((blogs) => setBlogs(blogs));
     }
   }, []);
 
@@ -47,7 +53,10 @@ const App = () => {
   const showBlogs = () => (
     <div>
       <h2>blogs</h2>
-      <p>{`${user.username} is logged in`}</p>
+      <p>
+        {`${user.username} is logged in`}{" "}
+        <button onClick={handleLogout}>logout</button>{" "}
+      </p>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
@@ -63,9 +72,15 @@ const App = () => {
       setToken(returnedToken);
       const returnedBlogs = await blogService.getAll(returnedToken);
       setBlogs(returnedBlogs);
+      window.localStorage.setItem("loggedBlogUser", JSON.stringify(loggedUser));
     } catch (error) {
       console.log("wrong credentials");
     }
+  };
+
+  const handleLogout = () => {
+    window.localStorage.clear();
+    setUser(null);
   };
 
   return <>{user ? showBlogs() : showLogin()}</>;
