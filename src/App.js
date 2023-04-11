@@ -3,6 +3,7 @@ import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import BlogForm from "./components/BlogForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -71,9 +72,7 @@ const App = () => {
     </div>
   );
 
-  const handleCreateBlog = async (e) => {
-    e.preventDefault();
-
+  const handleCreateBlog = async ({ title, author, url }) => {
     const newBlog = {
       title,
       author,
@@ -105,41 +104,7 @@ const App = () => {
     setUrl("");
   };
 
-  const createNewBlog = () => (
-    <>
-      <h3>Create new</h3>
-      <form onSubmit={handleCreateBlog}>
-        <div>
-          Title:
-          <input
-            type="text"
-            name="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-        <div>
-          Author:
-          <input
-            type="text"
-            name="Author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
-        </div>
-        <div>
-          Url:
-          <input
-            type="text"
-            name="Url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </div>
-        <button>Create</button>
-      </form>
-    </>
-  );
+  const createNewBlog = () => <BlogForm handleCreateBlog={handleCreateBlog} />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
