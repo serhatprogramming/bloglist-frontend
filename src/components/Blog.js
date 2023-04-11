@@ -1,7 +1,10 @@
 import { useState } from "react";
 
-const Blog = ({ blog }) => {
+import blogService from "../services/blogs";
+
+const Blog = ({ blog, token }) => {
   const [show, setShow] = useState(false);
+  const [likeCount, setLikeCount] = useState(blog.likes);
 
   const blogStyle = {
     paddingTop: 10,
@@ -13,6 +16,19 @@ const Blog = ({ blog }) => {
 
   const toggleShow = () => setShow(!show);
 
+  const increaseLike = async () => {
+    const updatedLikeBlog = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: likeCount + 1,
+      user: blog.user.id,
+      id: blog.id,
+    };
+    await blogService.updateBlog(updatedLikeBlog, token);
+    setLikeCount(likeCount + 1);
+  };
+
   return (
     <div style={blogStyle}>
       {blog.title} {blog.author}{" "}
@@ -22,7 +38,7 @@ const Blog = ({ blog }) => {
           <br />
           {blog.url}
           <br />
-          likes {blog.likes} <button>like</button>
+          likes {likeCount} <button onClick={increaseLike}>like</button>
           <br />
           {blog.user.username}
         </>

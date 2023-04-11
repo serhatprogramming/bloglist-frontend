@@ -26,5 +26,19 @@ const createNew = async (blog, token) => {
   }
 };
 
+const updateBlog = async (blog, token) => {
+  const config = {
+    headers: {
+      Authorization: token,
+    },
+  };
+
+  try {
+    return await axios.put(`${baseUrl}/${blog.id}`, blog, config);
+  } catch (error) {
+    return error.message;
+  }
+};
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, createNew };
+export default { getAll, createNew, updateBlog };
