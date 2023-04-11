@@ -11,10 +11,10 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+
   const [notification, setNotification] = useState(null);
+
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const userLocalStorage = JSON.parse(
@@ -104,7 +104,22 @@ const App = () => {
     setUrl("");
   };
 
-  const createNewBlog = () => <BlogForm handleCreateBlog={handleCreateBlog} />;
+  const createNewBlog = () => {
+    const showWhenVisible = { display: visible ? "" : "none" };
+    const hideWhenVisible = { display: visible ? "none" : "" };
+
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setVisible(true)}>new note</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm handleCreateBlog={handleCreateBlog} />
+          <button onClick={() => setVisible(false)}>cancel</button>
+        </div>
+      </div>
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
