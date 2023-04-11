@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+//components
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
+//services
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import BlogForm from "./components/BlogForm";
@@ -14,8 +17,9 @@ const App = () => {
 
   const [notification, setNotification] = useState(null);
 
-  const [visible, setVisible] = useState(false);
+  const blogFormRef = useRef();
 
+  //======================================================//
   useEffect(() => {
     const userLocalStorage = JSON.parse(
       window.localStorage.getItem("loggedBlogUser")
@@ -27,7 +31,7 @@ const App = () => {
       blogService.getAll(returnedToken).then((blogs) => setBlogs(blogs));
     }
   }, []);
-
+  //======================================================//
   const showLogin = () => (
     <>
       <h3>login to application</h3>
@@ -56,6 +60,7 @@ const App = () => {
       </form>
     </>
   );
+  //======================================================//
 
   const showBlogs = () => (
     <div>
@@ -71,8 +76,10 @@ const App = () => {
       ))}
     </div>
   );
+  //======================================================//
 
   const handleCreateBlog = async ({ title, author, url }) => {
+    blogFormRef.current.toggleVisible();
     const newBlog = {
       title,
       author,
@@ -96,23 +103,14 @@ const App = () => {
     }
     showNotification(message);
   };
+  //======================================================//
 
-  const createNewBlog = () => {
-    const showWhenVisible = { display: visible ? "" : "none" };
-    const hideWhenVisible = { display: visible ? "none" : "" };
-
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setVisible(true)}>new note</button>
-        </div>
-        <div style={showWhenVisible}>
-          <BlogForm handleCreateBlog={handleCreateBlog} />
-          <button onClick={() => setVisible(false)}>cancel</button>
-        </div>
-      </div>
-    );
-  };
+  const createNewBlog = () => (
+    <Togglable buttonLabel="new note" ref={blogFormRef}>
+      <BlogForm handleCreateBlog={handleCreateBlog} />
+    </Togglable>
+  );
+  //======================================================//
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -132,11 +130,13 @@ const App = () => {
       showNotification(message);
     }
   };
+  //======================================================//
 
   const handleLogout = () => {
     window.localStorage.clear();
     setUser(null);
   };
+  //======================================================//
 
   const showNotification = (message) => {
     setNotification({
@@ -147,6 +147,7 @@ const App = () => {
       setNotification(null);
     }, 1000);
   };
+  //======================================================//
 
   return <>{user ? showBlogs() : showLogin()}</>;
 };
