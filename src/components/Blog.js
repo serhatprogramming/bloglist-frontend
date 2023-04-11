@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, token }) => {
+const Blog = ({ blog, token, username }) => {
   const [show, setShow] = useState(false);
   const [likeCount, setLikeCount] = useState(blog.likes);
 
@@ -29,6 +29,10 @@ const Blog = ({ blog, token }) => {
     setLikeCount(likeCount + 1);
   };
 
+  const removeBlog = () => {
+    window.confirm(`Remove blog ${blog.title} by ${blog.author}`);
+  };
+
   return (
     <div style={blogStyle}>
       {blog.title} {blog.author}{" "}
@@ -41,6 +45,10 @@ const Blog = ({ blog, token }) => {
           likes {likeCount} <button onClick={increaseLike}>like</button>
           <br />
           {blog.user.username}
+          <br />
+          {blog.user.username === username && (
+            <button onClick={removeBlog}>remove</button>
+          )}
         </>
       )}
     </div>
