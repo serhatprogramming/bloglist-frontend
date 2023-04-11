@@ -34,7 +34,7 @@ const Blog = ({ blog, token, username }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blogContent">
       {blog.title} {blog.author}{" "}
       <button onClick={toggleShow}>{show ? "hide" : "view"}</button>
       {show && (
