@@ -95,13 +95,6 @@ const App = () => {
       setBlogs(returnedBlogs);
     }
     showNotification(message);
-    resetBlogFields();
-  };
-
-  const resetBlogFields = () => {
-    setTitle("");
-    setAuthor("");
-    setUrl("");
   };
 
   const createNewBlog = () => {
