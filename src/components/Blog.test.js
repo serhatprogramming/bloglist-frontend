@@ -31,8 +31,16 @@ describe("Blog tests", () => {
     const div = container.querySelector(".blogContent");
     expect(div).not.toHaveTextContent("test.com");
     const viewButton = screen.getByText("view");
-    screen.debug(viewButton);
     await user.click(viewButton);
     expect(div).toHaveTextContent("test.com");
+  });
+
+  test("like button clicked twice", async () => {
+    const user = userEvent.setup();
+    const div = container.querySelector(".blogContent");
+    expect(div).not.toHaveTextContent("test.com");
+    const viewButton = screen.getByText("view");
+    await user.click(viewButton);
+    const likeButton = screen.getByText("like");
   });
 });
