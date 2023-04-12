@@ -23,6 +23,7 @@ const BlogForm = ({ handleCreateBlog }) => {
             type="text"
             name="Title"
             value={title}
+            id="title"
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
@@ -32,6 +33,7 @@ const BlogForm = ({ handleCreateBlog }) => {
             type="text"
             name="Author"
             value={author}
+            id="author"
             onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
@@ -41,10 +43,11 @@ const BlogForm = ({ handleCreateBlog }) => {
             type="text"
             name="Url"
             value={url}
+            id="url"
             onChange={(e) => setUrl(e.target.value)}
           />
         </div>
-        <button>Create</button>
+        <button id="create-button">Create</button>
       </form>
     </div>
   );
