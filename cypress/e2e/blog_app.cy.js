@@ -8,6 +8,12 @@ describe("Blog App", function () {
       password: "helsinki",
     };
     cy.request("POST", "http://localhost:3003/api/users/", user);
+    const user2 = {
+      name: "FullStack Helsinki",
+      username: "fullstack",
+      password: "fullstack",
+    };
+    cy.request("POST", "http://localhost:3003/api/users/", user2);
     cy.visit("http://localhost:3000");
   });
 
@@ -30,28 +36,68 @@ describe("Blog App", function () {
 
     describe("when logged in", function () {
       beforeEach(function () {
-        cy.get("#username").type("helsinki");
-        cy.get("#password").type("helsinki");
-        cy.get("#login-button").click();
+        cy.login({ username: "helsinki", password: "helsinki" });
       });
       it("A blog can be created", function () {
-        cy.contains("new note").click();
-        cy.get("#title").type("cypress title");
-        cy.get("#author").type("cypress author");
-        cy.get("#url").type("cypress.url.com");
-        cy.get("#create-button").click();
+        cy.createBlog({
+          title: "cypress title",
+          author: "cypress author",
+          url: "cypress.url.com",
+        });
         cy.contains("cypress title");
       });
       it("Users can like a blog", function () {
-        cy.contains("new note").click();
-        cy.get("#title").type("cypress title");
-        cy.get("#author").type("cypress author");
-        cy.get("#url").type("cypress.url.com");
-        cy.get("#create-button").click();
+        cy.createBlog({
+          title: "cypress title",
+          author: "cypress author",
+          url: "cypress.url.com",
+        });
         cy.contains("cypress title");
         cy.contains("view").click();
         cy.contains("like").click();
         cy.contains("likes 1");
+      });
+      it("user can delete a blog", function () {
+        cy.createBlog({
+          title: "cypress title",
+          author: "cypress author",
+          url: "cypress.url.com",
+        });
+        cy.contains("view").click();
+        cy.contains("remove");
+      });
+      describe("when logged out and logged in with a different user", function () {
+        beforeEach(function () {
+          cy.createBlog({
+            title: "cypress title",
+            author: "cypress author",
+            url: "cypress.url.com",
+          });
+          cy.contains("cypress title");
+          cy.contains("logout").click();
+          cy.login({ username: "fullstack", password: "fullstack" });
+        });
+        it("another user can login", function () {
+          cy.contains("fullstack is logged in");
+        });
+        it("another user can create another blog", function () {
+          cy.createBlog({
+            title: "fullstack title",
+            author: "fullstack author",
+            url: "fullstack.url.com",
+          });
+          cy.contains("fullstack title");
+        });
+        it("only creator can delete", function () {
+          cy.createBlog({
+            title: "fullstack title",
+            author: "fullstack author",
+            url: "fullstack.url.com",
+          });
+          cy.contains("fullstack title");
+          cy.contains("view").click();
+          cy.contains("remove").should("not.exist");
+        });
       });
     });
   });
